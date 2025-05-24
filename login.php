@@ -21,14 +21,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $result = $stmt->get_result();
         $user = $result->fetch_assoc();
 
-        if ($user && password_verify($password, $user['pass_user'])) {
+        if ($user && password_verify($password, $user['password_hash'])) {
             $payload = [
                 'iat' => $issuedAt,
                 'exp' => $expirationTime,
                 'iss' => $issuer,
                 'data' => [
-                    'id' => $user['id_user'],
-                    'email' => $user['email_user'],
+                    'id' => $user['user_id'],
+                    'email' => $user['email'],
                 ],
             ];
 
