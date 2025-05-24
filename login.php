@@ -12,11 +12,12 @@ $issuer = "https://sibeux.my.id";
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = $_POST['email'];
     $password = $_POST['password'];
+    $actor = $_POST['user_actor'];
 
     // Cek pengguna di database
-    if ($stmt = $db->prepare("SELECT * FROM users WHERE email = ?")){
+    if ($stmt = $db->prepare("SELECT * FROM users WHERE email = ? AND user_actor = ?")) {
         
-        $stmt->bind_param('s', $email);
+        $stmt->bind_param('ss', $email, $actor);
         $stmt->execute();
         $result = $stmt->get_result();
         $user = $result->fetch_assoc();
@@ -29,6 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'data' => [
                     'id' => $user['user_id'],
                     'email' => $user['email'],
+                    'actor' => $user['user_actor'],
                 ],
             ];
 
