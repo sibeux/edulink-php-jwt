@@ -27,7 +27,7 @@ function createUser($db)
 {
     if (
         $stmt = $db->prepare('INSERT INTO `users` (`user_id`, `email`, `full_name`, `password_hash`, `phone_number`, `user_photo`, `user_actor`) 
-        VALUES (NULL, ?, ?, ?, ? NULL, ?);')
+        VALUES (NULL, ?, ?, ?, ?, NULL, ?);')
     ) {
         // encrypt the password
         $email = $_POST['email'];
