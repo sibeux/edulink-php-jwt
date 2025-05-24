@@ -13,9 +13,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'){
     echo "Metode tidak dikenal.";
 }
 
-function getUserData($email)
+function getUserData($email, $db)
 {
-    global $db, $sql;
     $sql = "SELECT * FROM users WHERE email = '" . $email . "'";
     executeStatementSql($sql, $db);
 }
@@ -46,7 +45,7 @@ function changeUserData($db, $name, $photo, $email)
 
 switch ($method) {
     case 'get_user_data':
-        getUserData($_GET['email']);
+        getUserData($_GET['email'], $db);
         break;
     case 'change_user_data':
         changeUserData($db, $_POST['name'], $_POST['photo'], $_POST['email']);
