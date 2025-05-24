@@ -3,7 +3,7 @@
 define('HOST', 'localhost');
 define('SIBEUX', 'sibe5579_cbux');
 define('pass', '1NvgEHFnwvDN96');
-define('DB', 'sibe5579_sihalal');
+define('DB', 'sibe5579_edulink');
 
 $db = new mysqli(HOST, SIBEUX, pass, DB);
 

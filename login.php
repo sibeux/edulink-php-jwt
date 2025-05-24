@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = $_POST['password'];
 
     // Cek pengguna di database
-    if ($stmt = $db->prepare("SELECT * FROM user WHERE email_user = ?")){
+    if ($stmt = $db->prepare("SELECT * FROM users WHERE email = ?")){
         
         $stmt->bind_param('s', $email);
         $stmt->execute();
