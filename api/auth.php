@@ -1,6 +1,6 @@
 <?php
 
-include '././auth.php';
+include '../config.php';
 
 function getEmailCheck($db)
 {
