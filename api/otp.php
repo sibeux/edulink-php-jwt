@@ -55,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta name=\"viewport\" content=\"width=device-width\" />
     <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />
-    <title>Zenziva - Forgot Password</title>
+    <title>Edulink - Login OTP</title>
 </head>
 
 <body itemscope itemtype=\"http://schema.org/EmailMessage\"
