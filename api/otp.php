@@ -2,6 +2,9 @@
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
+// Install PHPMailer mirip kayak install php-jwt
+// pakai ini composer require phpmailer/phpmailer di terminal
+
 require '../vendor/autoload.php';
 
 // Fungsi generate OTP 6 digit
