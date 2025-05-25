@@ -110,7 +110,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                             valign="top">
                                             Percobaan login dengan nama: <strong
                                                 style="font-family: \'Helvetica Neue\',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
-                                                '+ $name +'</strong><br />
+                                                $name</strong><br />
                                             Berikut kode OTP untuk Login ke Edulink:
                                         </td>
                                     </tr>
@@ -127,7 +127,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                             style="font-family: \'Helvetica Neue\',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px;"
                                             valign="top">
                                             <p style="text-align:center"><strong><span
-                                                        style="font-size:28pt;color:#3A71FF">'+ $otp +'</span></strong></p>
+                                                        style="font-size:28pt;color:#3A71FF">$otp</span></strong></p>
                                         </td>
                                     </tr>
                                     <tr
