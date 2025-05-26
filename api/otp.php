@@ -54,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $mail->Port = 587;
 
         // Recipients
-        $mail->setFrom('wahabinasrul@gmail.com', 'Edulink');
+        $mail->setFrom('admin@edulink.sibeux.my.id', 'Edulink');
         $mail->addAddress($email);
 
         // Content
