@@ -6,6 +6,7 @@ use PHPMailer\PHPMailer\Exception;
 // pakai ini composer require phpmailer/phpmailer di terminal
 
 require '../vendor/autoload.php';
+include '../config.php';
 
 // Fungsi generate OTP 6 digit
 function generateOTP($length = 4)
@@ -13,8 +14,21 @@ function generateOTP($length = 4)
     return str_pad(random_int(0, pow(10, $length) - 1), $length, '0', STR_PAD_LEFT);
 }
 
+function sendOtpToDatabase($email, $otp, $db)
+{
+    // Cek apakah email sudah ada di database
+    if (
+        $check_email = $db->prepare("SELECT * FROM otp 
+    WHERE email = ? AND is_used = false AND expires_at > NOW();")
+    )
+        ;
+} {
+    $stmt->bind_param('s', $_POST['email']);
+    $stmt->execute();
+}
+
 // Simpan OTP ke tempat penyimpanan, misal session atau database
-session_start();
+
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = $_POST['email'] ?? '';
@@ -26,9 +40,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     $otp = generateOTP();
-    $_SESSION['otp'] = $otp;
-    $_SESSION['otp_email'] = $email;
-    $_SESSION['otp_time'] = time();
 
     $mail = new PHPMailer(true);
 
@@ -43,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $mail->Port = 587;
 
         // Recipients
-        $mail->setFrom('wahabinasrul@gmail.com', 'Edulink');
+        $mail->setFrom('admin@edulink.sibeux.my.id', 'Edulink');
         $mail->addAddress($email);
 
         // Content
