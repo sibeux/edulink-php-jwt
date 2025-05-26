@@ -97,7 +97,7 @@ function verifyOtp($db) {
     }
 }
 
-function generateOtp($db){
+function crateOtp($db){
     $email = $_POST['email'] ?? '';
     $name = $_POST['name'] ?? '';
 
@@ -287,7 +287,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     switch ($method) {
     case 'generate_otp':
-        generateOtp($db);
+        crateOtp($db);
         break;
     case 'verify_otp':
         verifyOtp($db);
