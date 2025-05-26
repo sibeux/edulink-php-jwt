@@ -15,8 +15,8 @@ function generateOTP($length = 4)
 }
 
 function sendOtpToDatabase($email, $otp, $db){
-    if ($stmt = $db->prepare('INSERT INTO otp (email, code, created_at, expires_at, is_used)
-    VALUES (?, ?, NOW(), NOW() + INTERVAL 10 MINUTE, false)
+    if ($stmt = $db->prepare('INSERT INTO otp (id, email, code, created_at, expires_at, is_used)
+    VALUES (NULL, ?, ?, NOW(), NOW() + INTERVAL 10 MINUTE, false)
     ON DUPLICATE KEY UPDATE
     code = VALUES(code),
     created_at = NOW(),
