@@ -14,24 +14,29 @@ function generateOTP($length = 4)
     return str_pad(random_int(0, pow(10, $length) - 1), $length, '0', STR_PAD_LEFT);
 }
 
-function sendOtpToDatabase($email, $otp, $db){
-    if ($stmt = $db->prepare("INSERT INTO otp (id, email, code, created_at, expires_at, is_used)
-    VALUES (NULL, ?, ?, NOW(), NOW() + INTERVAL 10 MINUTE, 'false')
-    ON DUPLICATE KEY UPDATE
-    code = VALUES(code),
-    created_at = NOW(),
-    expires_at = NOW() + INTERVAL 10 MINUTE,
-    is_used = 'false'")) {
+function sendOtpToDatabase($email, $otp, $db) {
+    // Bersihkan data OTP yang sudah digunakan atau kadaluarsa
+    $db->query("DELETE FROM otp WHERE is_used = true OR expires_at < NOW()");
+
+    // Simpan atau update OTP baru
+    $stmt = $db->prepare("
+        INSERT INTO otp (id, email, code, created_at, expires_at, is_used)
+        VALUES (NULL, ?, ?, NOW(), NOW() + INTERVAL 10 MINUTE, 'false')
+        ON DUPLICATE KEY UPDATE
+            code = VALUES(code),
+            created_at = NOW(),
+            expires_at = NOW() + INTERVAL 10 MINUTE,
+            is_used = 'false'
+    ");
+
+    if ($stmt) {
         $stmt->bind_param('ss', $email, $otp);
         $stmt->execute();
-
         $stmt->close();
     } else {
         echo 'Could not prepare statement!';
     }
 }
-
-// Simpan OTP ke tempat penyimpanan, misal session atau database
 
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
