@@ -22,7 +22,7 @@ function sendOtpToDatabase($email, $otp, $db){
     created_at = NOW(),
     expires_at = NOW() + INTERVAL 10 MINUTE,
     is_used = false')) {
-        $stmt->bind_param('s', $_POST['email']);
+        $stmt->bind_param('ss', $email, $otp);
         $stmt->execute();
 
         $stmt->close();
