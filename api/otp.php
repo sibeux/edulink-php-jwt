@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $mail->Host = 'smtp-relay.brevo.com';
         $mail->SMTPAuth = true;
         $mail->Username = '8de16c001@smtp-brevo.com';     // ganti email pengirim
-        $mail->Password = 'SIbh0dWEnOgmay8k';        // ganti password aplikasi / app password
+        $mail->Password = 'OWRYxAqXHP2Dtvk0';        // ganti password aplikasi / app password
         $mail->SMTPSecure = 'tls';
         $mail->Port = 587;
 
