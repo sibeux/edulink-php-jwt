@@ -14,9 +14,21 @@ function generateOTP($length = 4)
     return str_pad(random_int(0, pow(10, $length) - 1), $length, '0', STR_PAD_LEFT);
 }
 
-function sendOtpToDatabase($email, $otp, $db)
-{
+function sendOtpToDatabase($email, $otp, $db){
+    if ($stmt = $db->prepare('INSERT INTO otp (email, code, created_at, expires_at, is_used)
+    VALUES (?, ?, NOW(), NOW() + INTERVAL 10 MINUTE, false)
+    ON DUPLICATE KEY UPDATE
+    code = VALUES(code),
+    created_at = NOW(),
+    expires_at = NOW() + INTERVAL 10 MINUTE,
+    is_used = false')) {
+        $stmt->bind_param('s', $_POST['email']);
+        $stmt->execute();
 
+        $stmt->close();
+    } else {
+        echo 'Could not prepare statement!';
+    }
 }
 
 // Simpan OTP ke tempat penyimpanan, misal session atau database
@@ -200,6 +212,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $mail->send();
 
         echo json_encode(['success' => true, 'message' => 'OTP sudah dikirim ke email']);
+        sendOtpToDatabase($email, $otp, $db);
     } catch (Exception $e) {
         echo json_encode(['success' => false, 'message' => 'Gagal kirim email: ' . $mail->ErrorInfo]);
     }
