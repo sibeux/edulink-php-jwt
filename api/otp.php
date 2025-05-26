@@ -16,15 +16,7 @@ function generateOTP($length = 4)
 
 function sendOtpToDatabase($email, $otp, $db)
 {
-    // Cek apakah email sudah ada di database
-    if (
-        $check_email = $db->prepare("SELECT * FROM otp 
-    WHERE email = ? AND is_used = false AND expires_at > NOW();")
-    )
-        ;
-} {
-    $stmt->bind_param('s', $_POST['email']);
-    $stmt->execute();
+    
 }
 
 // Simpan OTP ke tempat penyimpanan, misal session atau database
