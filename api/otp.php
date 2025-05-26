@@ -38,8 +38,66 @@ function sendOtpToDatabase($email, $otp, $db) {
     }
 }
 
+function verifyOtp($db) {
+    header('Content-Type: application/json');
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $email = $_POST['email'];
+    $otp = $_POST['otp'];
+
+    // Siapkan query cek OTP
+    $stmt = $db->prepare("
+        SELECT id FROM otp
+        WHERE email = ? AND code = ? AND is_used = 'false' AND expires_at > NOW()
+        LIMIT 1
+    ");
+
+    if (!$stmt) {
+        echo json_encode([
+            "status" => "error",
+            "message" => "Gagal mempersiapkan query SELECT."
+        ]);
+        return;
+    }
+
+    $stmt->bind_param('ss', $email, $otp);
+    $stmt->execute();
+    $stmt->store_result();
+
+    if ($stmt->num_rows === 1) {
+        $stmt->bind_result($id);
+        $stmt->fetch();
+        $stmt->close();
+
+        // Tandai OTP sebagai sudah digunakan
+        $update = $db->prepare("UPDATE otp SET is_used = 'true' WHERE id = ?");
+        if ($update) {
+            $update->bind_param('i', $id);
+            $update->execute();
+            $update->close();
+        }
+
+        // Hapus semua OTP yang sudah used dari email tersebut (bersih-bersih)
+        $cleanup = $db->prepare("DELETE FROM otp WHERE email = ? AND is_used = 'true'");
+        if ($cleanup) {
+            $cleanup->bind_param('s', $email);
+            $cleanup->execute();
+            $cleanup->close();
+        }
+
+        echo json_encode([
+            "status" => "success",
+            "message" => "OTP valid dan berhasil diverifikasi."
+        ]);
+    } else {
+        $stmt->close();
+        echo json_encode([
+            "status" => "fail",
+            "message" => "OTP tidak valid, sudah digunakan, atau telah kadaluarsa."
+        ]);
+    }
+}
+
+function generateOtp($db){
     $email = $_POST['email'] ?? '';
     $name = $_POST['name'] ?? '';
 
@@ -221,4 +279,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } catch (Exception $e) {
         echo json_encode(['success' => false, 'message' => 'Gagal kirim email: ' . $mail->ErrorInfo]);
     }
+}
+
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $method = $_POST['method'] ?? '';
+
+    switch ($method) {
+    case 'generate_otp':
+        generateOtp($db);
+        break;
+    case 'verify_otp':
+        verifyOtp($db);
+        break;
+    default:
+        break;
+}
+    
 }
