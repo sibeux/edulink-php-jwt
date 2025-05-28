@@ -15,21 +15,26 @@ $accountKey = $data[0]['gdrive_api'];
 
 $accountName = 'edulink';
 $containerName = 'images';
-
 $connectionString = "DefaultEndpointsProtocol=https;AccountName=$accountName;AccountKey=$accountKey;EndpointSuffix=core.windows.net";
 $blobClient = BlobRestProxy::createBlobService($connectionString);
 
-// Cek apakah ada request POST dan parameter 'filename'
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['filename'])) {
-    $filename = $_POST['filename'];
+// Baca input JSON
+$input = json_decode(file_get_contents('php://input'), true);
 
-    try {
-        // Delete blob
-        $blobClient->deleteBlob($containerName, $filename);
-        echo json_encode(['status' => 'success', 'message' => "File '$filename' has been deleted."]);
-    } catch (ServiceException $e) {
-        echo json_encode(['status' => 'error', 'message' => "Failed to delete: " . $e->getMessage()]);
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($input['filename']) && is_array($input['filename'])) {
+    $results = [];
+
+    foreach ($input['filename'] as $filename) {
+        $filename = basename($filename); // amankan path
+        try {
+            $blobClient->deleteBlob($containerName, $filename);
+            $results[] = ['filename' => $filename, 'status' => 'deleted'];
+        } catch (ServiceException $e) {
+            $results[] = ['filename' => $filename, 'status' => 'error', 'message' => $e->getMessage()];
+        }
     }
+
+    echo json_encode(['status' => 'done', 'results' => $results]);
 } else {
-    echo json_encode(['status' => 'error', 'message' => 'No filename provided.']);
+    echo json_encode(['status' => 'error', 'message' => 'Invalid request format.']);
 }
