@@ -22,13 +22,7 @@ if ($azureResponse === FALSE) {
 // Ubah JSON menjadi array PHP
 $data = json_decode($azureResponse, true);
 // cari key email yang memiliki value "azure_api_edulink"
-$accountKey = null;
-foreach ($data as $item) {
-    if ($item['email'] === 'azure_api_edulink') {
-        $accountKey = $item['gdrive_api'];
-        break;
-    }
-}
+$accountKey = $data[0]['gdrive_api'];
 
 $accountName = 'edulink';
 $containerName = 'images';
