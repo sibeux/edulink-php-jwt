@@ -24,10 +24,8 @@ $data = json_decode($azureResponse, true);
 // cari key email yang memiliki value "azure_api_edulink"
 $accountKey = null;
 foreach ($data as $item) {
-    if (isset($item['email']) && $item['email'] === 'azure_api_edulink') {
-        if (isset($item['gdrive_api'])) {
-            $accountKey = $item['gdrive_api'];
-        }
+    if ($item['email'] === 'azure_api_edulink') {
+        $accountKey = $item['gdrive_api'];
         break;
     }
 }
