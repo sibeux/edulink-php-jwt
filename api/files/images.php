@@ -1,5 +1,5 @@
 <?php
-require 'vendor/autoload.php';
+require '../../vendor/autoload.php';
 
 // Seperti biasa, install dulu pakai composer.
 // composer require microsoft/azure-storage-blob
