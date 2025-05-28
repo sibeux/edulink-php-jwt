@@ -18,6 +18,18 @@ class ComposerStaticInit937f5de424acd34e58cf7639cb52ad9d
     );
 
     public static $prefixDirsPsr4 = array (
+<<<<<<< HEAD
+=======
+        'Psr\\Http\\Message\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/http-message/src',
+            1 => __DIR__ . '/..' . '/psr/http-factory/src',
+        ),
+        'Psr\\Http\\Client\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/http-client/src',
+        ),
+>>>>>>> 09e1045 (add)
         'PHPMailer\\PHPMailer\\' => 
         array (
             0 => __DIR__ . '/..' . '/phpmailer/phpmailer/src',
