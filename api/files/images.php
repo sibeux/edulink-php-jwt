@@ -26,7 +26,7 @@ $accountKey = null;
 foreach ($data as $item) {
     if (isset($item['email']) && $item['email'] === 'azure_api_edulink') {
         if (isset($item['gdrive_api'])) {
-            $gdriveApiValue = $item['gdrive_api'];
+            $accountKey = $item['gdrive_api'];
         }
         break;
     }
