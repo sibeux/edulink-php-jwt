@@ -32,7 +32,6 @@ foreach ($data as $item) {
     }
 }
 
-
 $accountName = 'edulink';
 $containerName = 'images';
 
