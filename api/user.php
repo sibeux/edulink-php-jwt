@@ -19,17 +19,23 @@ function getUserData($email, $db)
     executeStatementSql($sql, $db);
 }
 
-function changeUserData($db, $name, $photo, $email)
+function changeUserData($db)
 {
-    global $sql;
+    $name = $_POST['name']; 
+    $photo = $_POST['photo']; 
+    $email =  $_POST['email'];
+    $birthday = $_POST['birthday'];
 
     if (
-        $stmt = $db->prepare('UPDATE users SET full_name = ?, user_photo = ? WHERE email = ?;')
+        $stmt = $db->prepare('UPDATE users 
+            SET full_name = ?, user_photo = ?, birth_date = ? 
+            WHERE email = ?;')
     ) {
         $stmt->bind_param(
-            'sss',
+            'ssss',
             $name,
             $photo,
+            $birthday,
             $email
         );
 
@@ -48,7 +54,7 @@ switch ($method) {
         getUserData($_GET['email'], $db);
         break;
     case 'change_user_data':
-        changeUserData($db, $_POST['name'], $_POST['photo'], $_POST['email']);
+        changeUserData($db);
         break;
     default:
         break;
