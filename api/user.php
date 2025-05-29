@@ -43,10 +43,21 @@ function changeUserData($db)
             $email
         );
 
-        $stmt->execute();
-
+    // Attempt to execute the statement
+    if ($stmt->execute()) {
         $response = ["status" => "success"];
         echo json_encode($response);
+    } else {
+        // stmt->execute() failed
+        $response = [
+            "status" => "failed",
+            "error_message" => $stmt->error,
+            "error_code" => $stmt->errno
+        ];
+        echo json_encode($response);
+    }
+
+    $stmt->close(); // Close the statement after execution (whether successful or not)
     } else {
         $response = ["status" => "failed"];
         echo json_encode($response);
