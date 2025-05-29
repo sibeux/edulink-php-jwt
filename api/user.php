@@ -26,10 +26,11 @@ function changeUserData($db)
     $email =  $_POST['email'];
     $birthday = $_POST['birthday'];
     $gender = $_POST['gender'];
+    $city = $_POST['city'];
 
     if (
         $stmt = $db->prepare('UPDATE users 
-            SET full_name = ?, user_photo = ?, birth_date = ?, gender = ?
+            SET full_name = ?, user_photo = ?, birth_date = ?, gender = ?, city = ?
             WHERE email = ?;')
     ) {
         $stmt->bind_param(
@@ -38,6 +39,7 @@ function changeUserData($db)
             $photo,
             $birthday,
             $gender,
+            $city,
             $email
         );
 
