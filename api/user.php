@@ -34,7 +34,7 @@ function changeUserData($db)
             WHERE email = ?;')
     ) {
         $stmt->bind_param(
-            'sssss',
+            'ssssss',
             $name,
             $photo,
             $birthday,
