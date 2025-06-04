@@ -8,21 +8,24 @@ use MicrosoftAzure\Storage\Blob\BlobRestProxy;
 use MicrosoftAzure\Storage\Common\Exceptions\ServiceException;
 use MicrosoftAzure\Storage\Blob\Models\CreateBlockBlobOptions;
 
-// URL API
+// Ambil API key dari endpoint kamu
 $azureUrl = "https://sibeux.my.id/cloud-music-player/database/mobile-music-player/api/gdrive_api.php";
-
-// Ambil data API
 $azureResponse = file_get_contents($azureUrl);
 
-// Cek apakah response berhasil diambil
 if ($azureResponse === FALSE) {
-    die('Error occurred while accessing the API.');
+    die(json_encode(['status' => 'error', 'message' => 'Error accessing API.']));
 }
 
-// Ubah JSON menjadi array PHP
 $data = json_decode($azureResponse, true);
-// cari key email yang memiliki value "azure_api_edulink"
-$accountKey = $data[0]['gdrive_api'];
+$accountKey = null; // Initialize accountKey as null
+
+// Iterate through the array to find the email "azure_api_edulink"
+foreach ($data as $item) {
+    if (isset($item['email']) && $item['email'] === 'azure_api_edulink') {
+        $accountKey = $item['gdrive_api'];
+        break; // Stop iterating once the correct email is found
+    }
+}
 
 $accountName = 'edulink';
 $containerName = 'images';
