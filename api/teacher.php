@@ -16,28 +16,52 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 function getTeacherData($teacherId, $db)
 {
     $sql = "SELECT
-    -- Pilih kolom teacher_id hanya dari tabel utama (teacher)
-    teacher.teacher_id,
-    
-    -- Pilih kolom lain yang Anda butuhkan dari tabel teacher
-    teacher.about,
-    teacher.skills,
-    teacher.price,
-    
-    -- Pilih kolom yang relevan dari tabel availability (ta)
-    ta.id as availability_id, -- Beri alias agar tidak bentrok jika ada nama 'id' di tabel teacher
-    ta.available_date,
-    ta.start_time,
-    ta.end_time
-    
-FROM
-    teacher
-LEFT JOIN
-    teacher_availability as ta ON teacher.teacher_id = ta.teacher_id
-WHERE
-    teacher.teacher_id = '$teacherId';";
-    executeStatementSql($sql, $db);
+        t.teacher_id,
+        t.about,
+        t.skills,
+        t.price,
+        ta.id as availability_id,
+        ta.available_date,
+        ta.start_time,
+        ta.end_time
+    FROM teacher t
+    LEFT JOIN teacher_availability ta ON t.teacher_id = ta.teacher_id
+    WHERE t.teacher_id = '$teacherId'";
+
+    $result = mysqli_query($db, $sql);
+
+    $teacher = null;
+    $availabilities = [];
+
+    while ($row = mysqli_fetch_assoc($result)) {
+        if ($teacher === null) {
+            $teacher = [
+                "teacher_id" => $row["teacher_id"],
+                "about" => $row["about"],
+                "skills" => $row["skills"],
+                "price" => $row["price"],
+                "availabilities" => []
+            ];
+        }
+
+        if (!empty($row["availability_id"])) {
+            $availabilities[] = [
+                "id" => $row["availability_id"],
+                "available_date" => $row["available_date"],
+                "start_time" => $row["start_time"],
+                "end_time" => $row["end_time"]
+            ];
+        }
+    }
+
+    if ($teacher !== null) {
+        $teacher["availabilities"] = $availabilities;
+        echo json_encode($teacher);
+    } else {
+        echo json_encode([]);
+    }
 }
+
 
 switch ($method) {
     case 'get_teacher_data':
