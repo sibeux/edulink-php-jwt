@@ -36,29 +36,43 @@ function getEmailPhoneCheck($db)
 function createUser($db)
 {
     if (
-        $stmt = $db->prepare('INSERT INTO `users` (`user_id`, `full_name`, `email`, `password_hash`, `phone_number`, `user_photo`, `user_actor`, `gender`, `birth_date`, `city`, `country`, `address`, `courses`) 
+        $stmt = $db->prepare('INSERT INTO `users` 
+        (`user_id`, `full_name`, `email`, `password_hash`, `phone_number`, `user_photo`, `user_actor`, `gender`, `birth_date`, `city`, `country`, `address`, `courses`) 
         VALUES (NULL, ?, ?, ?, ?, NULL, ?, NULL, NULL, NULL, NULL, NULL, NULL);')
     ) {
-        // encrypt the password
+        // Ambil data dari form
         $email = $_POST['email'];
         $name = $_POST['full_name'];
         $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
         $phone = $_POST['phone_number'];
         $actor = $_POST['user_actor'];
 
-        // hati-hati sama koma di bind_param terakhir, njir.
+        // Bind dan eksekusi query
         $stmt->bind_param('sssss', $name, $email, $password, $phone, $actor);
         $stmt->execute();
 
-        // registration successful
-        $response = ["status" => "success"];
+        // Ambil user_id terbaru
+        $new_user_id = $db->insert_id;
+
+        // Kalau actor = tutor, insert ke table teacher
+        if ($actor === 'tutor') {
+            $teacher_stmt = $db->prepare('INSERT INTO `teacher` (`teacher_id`) VALUES (?)');
+            if ($teacher_stmt) {
+                $teacher_stmt->bind_param('i', $new_user_id);
+                $teacher_stmt->execute();
+            }
+        }
+
+        // Kirim respons
+        $response = ["status" => "success", "user_id" => $new_user_id];
         echo json_encode($response);
+
     } else {
-        $response = ["status" => "failed"];
+        $response = ["status" => "failed", "error" => $db->error];
         echo json_encode($response);
-        echo 'Could not prepare statement!';
     }
 }
+
 
 switch ($_POST['method']) {
     case 'email_phone_check':
