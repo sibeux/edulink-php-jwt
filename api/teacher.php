@@ -15,20 +15,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 function getTeacherData($teacherId, $db)
 {
+    // 1. Siapkan query dengan placeholder (?)
     $sql = "SELECT
-        t.teacher_id,
-        t.about,
-        t.skills,
-        t.price,
-        ta.id as availability_id,
-        ta.available_date,
-        ta.start_time,
-        ta.end_time
-    FROM teacher t
-    LEFT JOIN teacher_availability ta ON t.teacher_id = ta.teacher_id
-    WHERE t.teacher_id = '$teacherId'";
+            t.teacher_id, t.about, t.skills, t.price,
+            ta.id as availability_id, ta.available_date, ta.start_time, ta.end_time
+        FROM teacher t
+        LEFT JOIN teacher_availability ta ON t.teacher_id = ta.teacher_id
+        WHERE t.teacher_id = ?";
 
-    $result = mysqli_query($db, $sql);
+    // 2. Buat prepared statement
+    $stmt = mysqli_prepare($db, $sql);
+
+    // 3. Ikat parameter (s = string, i = integer, d = double, b = blob)
+    mysqli_stmt_bind_param($stmt, "i", $teacherId); // Asumsi teacher_id adalah integer
+
+    // 4. Eksekusi statement
+    mysqli_stmt_execute($stmt);
+
+    // 5. Ambil hasilnya
+    $result = mysqli_stmt_get_result($stmt);
 
     $teacher = null;
     $availabilities = [];
