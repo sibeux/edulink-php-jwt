@@ -15,46 +15,57 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 function getTeacherData($teacherId, $db)
 {
-    // 1. Siapkan query dengan placeholder (?)
+    // 1. Siapkan query
     $sql = "SELECT
-            t.teacher_id, t.about, t.skills, t.price,
-            ta.id as availability_id, ta.available_date, ta.start_time, ta.end_time
-        FROM teacher t
-        LEFT JOIN teacher_availability ta ON t.teacher_id = ta.teacher_id
-        WHERE t.teacher_id = ?";
+                t.teacher_id, t.about, t.skills, t.price,
+                ta.id as availability_id, ta.available_date, ta.start_time, ta.end_time
+            FROM teacher t
+            LEFT JOIN teacher_availability ta ON t.teacher_id = ta.teacher_id
+            WHERE t.teacher_id = ?";
 
     // 2. Buat prepared statement
     $stmt = mysqli_prepare($db, $sql);
 
-    // 3. Ikat parameter (s = string, i = integer, d = double, b = blob)
-    mysqli_stmt_bind_param($stmt, "i", $teacherId); // Asumsi teacher_id adalah integer
+    // 3. Ikat parameter
+    mysqli_stmt_bind_param($stmt, "i", $teacherId);
 
     // 4. Eksekusi statement
     mysqli_stmt_execute($stmt);
 
-    // 5. Ambil hasilnya
-    $result = mysqli_stmt_get_result($stmt);
+    // 5. Ikat variabel hasil (bind result variables)
+    mysqli_stmt_bind_result(
+        $stmt,
+        $res_teacher_id,
+        $res_about,
+        $res_skills,
+        $res_price,
+        $res_availability_id,
+        $res_available_date,
+        $res_start_time,
+        $res_end_time
+    );
 
     $teacher = null;
     $availabilities = [];
 
-    while ($row = mysqli_fetch_assoc($result)) {
+    // 6. Fetch hasilnya satu per satu
+    while (mysqli_stmt_fetch($stmt)) {
         if ($teacher === null) {
             $teacher = [
-                "teacher_id" => $row["teacher_id"],
-                "about" => $row["about"],
-                "skills" => $row["skills"],
-                "price" => $row["price"],
-                "availabilities" => []
+                "teacher_id" => $res_teacher_id,
+                "about" => $res_about,
+                "skills" => $res_skills,
+                "price" => $res_price,
+                "availabilities" => [] // Initialize here
             ];
         }
 
-        if (!empty($row["availability_id"])) {
+        if (!empty($res_availability_id)) {
             $availabilities[] = [
-                "id" => $row["availability_id"],
-                "available_date" => $row["available_date"],
-                "start_time" => $row["start_time"],
-                "end_time" => $row["end_time"]
+                "id" => $res_availability_id,
+                "available_date" => $res_available_date,
+                "start_time" => $res_start_time,
+                "end_time" => $res_end_time
             ];
         }
     }
@@ -63,8 +74,12 @@ function getTeacherData($teacherId, $db)
         $teacher["availabilities"] = $availabilities;
         echo json_encode($teacher);
     } else {
+        // Jika tidak ada guru yang ditemukan sama sekali
         echo json_encode([]);
     }
+
+    // 7. Tutup statement
+    mysqli_stmt_close($stmt);
 }
 
 
