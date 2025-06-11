@@ -26,9 +26,12 @@ function getTeacherData($teacherId, $db)
         ta.end_time
     FROM teacher t
     LEFT JOIN teacher_availability ta ON t.teacher_id = ta.teacher_id
-    WHERE t.teacher_id = '$teacherId'";
+    WHERE t.teacher_id = ?";
 
-    $result = mysqli_query($db, $sql);
+    $stmt = mysqli_prepare($db, $sql);
+    mysqli_stmt_bind_param($stmt, "i", $teacherId);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
 
     $teacher = null;
     $availabilities = [];
@@ -47,7 +50,7 @@ function getTeacherData($teacherId, $db)
         if (!empty($row["availability_id"])) {
             $availabilities[] = [
                 "id" => $row["availability_id"],
-                "available_date" => $row["available_date"],
+                "available_day" => $row["available_day"],
                 "start_time" => $row["start_time"],
                 "end_time" => $row["end_time"]
             ];
@@ -61,6 +64,7 @@ function getTeacherData($teacherId, $db)
         echo json_encode([]);
     }
 }
+
 
 
 switch ($method) {
