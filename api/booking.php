@@ -110,7 +110,7 @@ switch ($method) {
         break;
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+function executeStatementSql($sql, $db) {
     $result = $db->query($sql);
 
     // Check if the query was successful
