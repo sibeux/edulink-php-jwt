@@ -68,9 +68,8 @@ function getTeacherData($teacherId, $db)
     }
 }
 
-function updateTeacherProfile($input)
+function updateTeacherProfile($input, $db)
 {
-    global $db;
 
     $teacherId = $db->real_escape_string($input['teacher_id'] ?? '');
     $availability = $input['availability'] ?? [];
@@ -125,7 +124,7 @@ switch ($method) {
         getTeacherData($_GET['teacher_id'], $db);
         break;
     case 'update_teacher_profile':
-        updateTeacherProfile($input);
+        updateTeacherProfile($input, $db);
         break;
     default:
         break;
