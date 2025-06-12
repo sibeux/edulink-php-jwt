@@ -105,7 +105,7 @@ function updateTeacherProfile($db)
 
     // 1. Update price in teacher_profile table
     $stmtPrice = $db->prepare("UPDATE teacher SET price = ? WHERE teacher_id = ?");
-    $stmtPrice->bind_param("ds", $price, $teacherId); // d = double, s = string
+    $stmtPrice->bind_param("di", $price, $teacherId); // d = double, s = string
     $stmtPrice->execute();
     $stmtPrice->close();
 
@@ -117,15 +117,17 @@ function updateTeacherProfile($db)
         $stmtAvail = $db->prepare("INSERT INTO teacher_availability (teacher_id, available_day, start_time, end_time, is_available) VALUES (?, ?, ?, ?, ?)");
 
         foreach ($availability as $item) {
-            $day = $item['available_day'] ?? '';
-            $start_time = $item['start_time'] ?? '';
-            $end_time = $item['end_time'] ?? '';
-            $is_available = $item['is_available'] ?? '';
+            $day = $item['availableDay'] ?? '';
+            $start_time = $item['startTime'] ?? '';
+            $end_time = $item['endTime'] ?? '';
+            $is_available = $item['isAvailable'] ?? 0;
 
-
-            if ($day && $start_time && $end_time && $is_available) {
-                $stmtAvail->bind_param("sssss", $teacherId, $day, $start_time, $end_time, $is_available);
+            if ($day && $start_time && $end_time && isset($item['isAvailable'])) {
+                $stmtAvail->bind_param("ssssi", $teacherId, $day, $start_time, $end_time, $is_available);
                 $stmtAvail->execute();
+                if (!$stmtAvail->execute()) {
+                    echo json_encode(["error" => "Failed to insert availability", "details" => $stmtAvail->error]);
+                }
             }
         }
         $stmtAvail->close();
