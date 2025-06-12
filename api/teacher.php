@@ -134,6 +134,21 @@ function updateTeacherProfile($db)
     echo json_encode(["message" => "Teacher profile and availability updated successfully", "status" => "success"]);
 }
 
+function getExploreMentor($db)
+{
+    $sql = "SELECT
+    u.full_name,
+    t.teacher_id,
+    t.price,
+    GROUP_CONCAT(CONCAT(ta.available_day, ' ', ta.start_time, '-', ta.end_time) SEPARATOR ', ') AS schedule
+FROM teacher t
+LEFT JOIN teacher_availability ta ON t.teacher_id = ta.teacher_id
+LEFT JOIN users u ON t.teacher_id = u.user_id
+GROUP BY t.teacher_id, u.full_name, t.price;";
+
+    executeStatementSql($sql, $db);
+}   
+
 
 
 switch ($method) {
@@ -143,6 +158,8 @@ switch ($method) {
     case 'update_teacher_profile':
         updateTeacherProfile( $db);
         break;
+    case 'get_explore_mentor':
+        getExploreMentor($db);
     default:
         break;
 }
