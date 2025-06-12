@@ -140,7 +140,7 @@ function getExploreMentor($db)
     u.full_name,
     t.teacher_id,
     t.price,
-    GROUP_CONCAT(CONCAT(ta.available_day, ' ', ta.start_time, '-', ta.end_time) SEPARATOR ', ') AS schedule
+    GROUP_CONCAT(CONCAT(ta.available_day, ' ', ta.start_time, '-', ta.end_time, ' ', ta.is_available) SEPARATOR ', ') AS schedule
 FROM teacher t
 LEFT JOIN teacher_availability ta ON t.teacher_id = ta.teacher_id
 LEFT JOIN users u ON t.teacher_id = u.user_id
