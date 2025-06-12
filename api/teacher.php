@@ -125,7 +125,8 @@ switch ($method) {
         getTeacherData($_GET['teacher_id'], $db);
         break;
     case 'update_teacher_profile':
-
+        updateTeacherProfile($input);
+        break;
     default:
         break;
 }
