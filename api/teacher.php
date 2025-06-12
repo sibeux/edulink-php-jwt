@@ -1,6 +1,7 @@
 <?php
-
+header("Content-Type: application/json");
 include '../config.php';
+$input = json_decode(file_get_contents("php://input"), true);
 
 $sql = "";
 $method = '';
@@ -67,12 +68,64 @@ function getTeacherData($teacherId, $db)
     }
 }
 
+function updateTeacherProfile($input)
+{
+    global $db;
+
+    $teacherId = $db->real_escape_string($input['teacher_id'] ?? '');
+    $availability = $input['availability'] ?? [];
+    $price = $input['price'] ?? null;
+
+    if (empty($teacherId)) {
+        http_response_code(400);
+        echo json_encode(["error" => "teacher_id is required", "status" => "error"]);
+        return;
+    }
+
+    if (!is_numeric($price)) {
+        http_response_code(400);
+        echo json_encode(["error" => "price must be a number", "status" => "error"]);
+        return;
+    }
+
+    // 1. Update price in teacher_profile table
+    $stmtPrice = $db->prepare("UPDATE teacher SET price = ? WHERE teacher_id = ?");
+    $stmtPrice->bind_param("ds", $price, $teacherId); // d = double, s = string
+    $stmtPrice->execute();
+    $stmtPrice->close();
+
+    // 2. Update availability
+    if (is_array($availability) && count($availability) > 0) {
+        // Hapus data lama (opsional)
+        $db->query("DELETE FROM teacher_availability WHERE teacher_id = '$teacherId'");
+
+        $stmtAvail = $db->prepare("INSERT INTO teacher_availability (teacher_id, available_day, start_time, end_time, is_available) VALUES (?, ?, ?, ?, ?)");
+
+        foreach ($availability as $item) {
+            $day = $item['available_day'] ?? '';
+            $start_time = $item['start_time'] ?? '';
+            $end_time = $item['end_time'] ?? '';
+            $is_available = $item['is_available'] ?? '';
+
+
+            if ($day && $start_time && $end_time && $is_available) {
+                $stmtAvail->bind_param("sssss", $teacherId, $day, $start_time, $end_time, $is_available);
+                $stmtAvail->execute();
+            }
+        }
+        $stmtAvail->close();
+    }
+    echo json_encode(["message" => "Teacher profile and availability updated successfully", "status" => "success"]);
+}
+
 
 
 switch ($method) {
     case 'get_teacher_data':
         getTeacherData($_GET['teacher_id'], $db);
         break;
+    case 'update_teacher_profile':
+
     default:
         break;
 }
