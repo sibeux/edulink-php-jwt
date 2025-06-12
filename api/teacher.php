@@ -23,7 +23,8 @@ function getTeacherData($teacherId, $db)
         ta.id as availability_id,
         ta.available_day,
         ta.start_time,
-        ta.end_time
+        ta.end_time,
+        ta.is_available
     FROM teacher t
     LEFT JOIN teacher_availability ta ON t.teacher_id = ta.teacher_id
     WHERE t.teacher_id = ?";
@@ -52,7 +53,8 @@ function getTeacherData($teacherId, $db)
                 "id" => $row["availability_id"],
                 "available_day" => $row["available_day"],
                 "start_time" => $row["start_time"],
-                "end_time" => $row["end_time"]
+                "end_time" => $row["end_time"],
+                'is_available' => $row["is_available"]
             ];
         }
     }
