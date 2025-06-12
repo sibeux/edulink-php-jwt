@@ -62,10 +62,50 @@ function createBooking($db)
     }
 }
 
+function getBookingsByStudent($db, $student_id)
+{
+    if ($stmt = $db->prepare("SELECT * FROM bookings WHERE student_id = ? ORDER BY booking_id DESC")) {
+        $stmt->bind_param("i", $student_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        $bookings = [];
+
+        while ($row = $result->fetch_assoc()) {
+            $bookings[] = $row;
+        }
+
+        if (count($bookings) > 0) {
+            $response = [
+                "status" => "success",
+                "data" => $bookings
+            ];
+        } else {
+            $response = [
+                "status" => "success",
+                "data" => [],
+                "message" => "No bookings found for this student."
+            ];
+        }
+
+        $stmt->close();
+    } else {
+        $response = [
+            "status" => "error",
+            "message" => "Failed to prepare statement.",
+            "error" => $db->error
+        ];
+    }
+
+    echo json_encode($response);
+}
+
 switch ($method) {
     case 'create_booking':
         createBooking($db);
         break;
+    case 'get_bookings_by_student':
+        getBookingsByStudent($db, $_GET['student_id'] ?? 0);
     default:
         break;
 }
