@@ -1,7 +1,6 @@
 <?php
 header("Content-Type: application/json");
 include '../config.php';
-$input = json_decode(file_get_contents("php://input"), true);
 
 $sql = "";
 $method = '';
@@ -68,12 +67,12 @@ function getTeacherData($teacherId, $db)
     }
 }
 
-function updateTeacherProfile($input, $db)
+function updateTeacherProfile($db)
 {
 
-    $teacherId = $db->real_escape_string($input['teacher_id'] ?? '');
-    $availability = $input['availability'] ?? [];
-    $price = $input['price'] ?? null;
+    $teacherId = $_POST['teacher_id'] ?? null;
+    $availability = $_POST['availability'] ?? [];
+    $price = $_POST['price'] ?? null;
 
     if (empty($teacherId)) {
         http_response_code(400);
@@ -124,7 +123,7 @@ switch ($method) {
         getTeacherData($_GET['teacher_id'], $db);
         break;
     case 'update_teacher_profile':
-        updateTeacherProfile($input, $db);
+        updateTeacherProfile( $db);
         break;
     default:
         break;
