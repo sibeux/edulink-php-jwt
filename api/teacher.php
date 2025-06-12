@@ -124,7 +124,6 @@ function updateTeacherProfile($db)
 
             if ($day && $start_time && $end_time && isset($item['isAvailable'])) {
                 $stmtAvail->bind_param("ssssi", $teacherId, $day, $start_time, $end_time, $is_available);
-                $stmtAvail->execute();
                 if (!$stmtAvail->execute()) {
                     echo json_encode(["error" => "Failed to insert availability", "details" => $stmtAvail->error]);
                 }
