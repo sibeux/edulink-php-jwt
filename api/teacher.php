@@ -138,6 +138,7 @@ function getExploreMentor($db)
 {
     $sql = "SELECT
     u.full_name,
+    u.user_photo,
     t.teacher_id,
     t.price,
     GROUP_CONCAT(CONCAT(ta.available_day, ' ', ta.start_time, '-', ta.end_time, ' ', ta.is_available) SEPARATOR ', ') AS schedule
