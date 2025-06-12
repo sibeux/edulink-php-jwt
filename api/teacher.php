@@ -4,9 +4,29 @@ include '../config.php';
 
 $sql = "";
 $method = '';
+$teacherId = '';
+$availability = '';
+$price = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $method = $_POST['method'] ?? '';
+    // Mendapatkan data JSON dari body request
+    $input = file_get_contents('php://input');
+
+    // Mengubah JSON menjadi array PHP
+    $data = json_decode($input, true);
+
+    // Cek apakah data berhasil di-decode
+    if ($data === null) {
+        // Jika gagal decode JSON, tangani error
+        http_response_code(400); // Bad Request
+        echo json_encode(['message' => 'Invalid JSON data']);
+        exit;
+    }
+    
+    $method = $data['method'] ?? '';
+    $teacherId = $data['teacher_id'] ?? '';
+    $availability = $data['availability'] ?? '';
+    $price = $data['price'] ?? '';
 } elseif ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $method = $_GET['method'] ?? '';
 } else {
@@ -69,10 +89,7 @@ function getTeacherData($teacherId, $db)
 
 function updateTeacherProfile($db)
 {
-
-    $teacherId = $_POST['teacher_id'] ?? null;
-    $availability = $_POST['availability'] ?? [];
-    $price = $_POST['price'] ?? null;
+    global $teacherId, $availability, $price;
 
     if (empty($teacherId)) {
         http_response_code(400);
