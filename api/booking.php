@@ -64,7 +64,7 @@ function createBooking($db)
 
 function getBookingsByStudent($db, $student_id)
 {
-    if ($stmt = $db->prepare("SELECT * FROM bookings WHERE student_id = ? ORDER BY booking_id DESC")) {
+    if ($stmt = $db->prepare("SELECT * FROM bookings WHERE student_id = ? ORDER BY id_booking DESC")) {
         $stmt->bind_param("i", $student_id);
         $stmt->execute();
         $result = $stmt->get_result();
