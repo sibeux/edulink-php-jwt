@@ -65,7 +65,7 @@ function createBooking($db)
 function getBookingsByStudent($db, $student_id)
 {
     if ($stmt = $db->prepare("SELECT bookings.*, 
-users.full_name as teacher_name, users.user_photo as teacher_photo
+users.full_name as client_name, users.user_photo as client_photo
 FROM bookings 
 LEFT JOIN users on users.user_id = bookings.teacher_id
 WHERE student_id = ? ORDER BY id_booking DESC;")) {
@@ -104,12 +104,58 @@ WHERE student_id = ? ORDER BY id_booking DESC;")) {
     echo json_encode($response);
 }
 
+function getBookingsByTeacher($db, $teacher_id)
+{
+    if (
+        $stmt = $db->prepare("SELECT bookings.*, 
+users.full_name as client_name, users.user_photo as client_photo
+FROM bookings 
+LEFT JOIN users on users.user_id = bookings.student_id
+WHERE teacher_id = ? ORDER BY id_booking DESC;;")
+    ) {
+        $stmt->bind_param("i", $teacher_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        $bookings = [];
+
+        while ($row = $result->fetch_assoc()) {
+            $bookings[] = $row;
+        }
+
+        if (count($bookings) > 0) {
+            $response = [
+                "status" => "success",
+                "data" => $bookings
+            ];
+        } else {
+            $response = [
+                "status" => "success",
+                "data" => [],
+                "message" => "No bookings found for this teacher."
+            ];
+        }
+
+        $stmt->close();
+    } else {
+        $response = [
+            "status" => "error",
+            "message" => "Failed to prepare statement.",
+            "error" => $db->error
+        ];
+    }
+
+    echo json_encode($response);
+}
+
 switch ($method) {
     case 'create_booking':
         createBooking($db);
         break;
     case 'get_bookings_by_student':
         getBookingsByStudent($db, $_GET['student_id'] ?? 0);
+    case 'get_bookings_by_teacher':
+        getBookingsByTeacher($db, $_GET['teacher_id'] ?? 0);
     default:
         break;
 }
