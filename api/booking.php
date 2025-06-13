@@ -154,8 +154,10 @@ switch ($method) {
         break;
     case 'get_bookings_by_student':
         getBookingsByStudent($db, $_GET['student_id'] ?? 0);
+        break;
     case 'get_bookings_by_teacher':
         getBookingsByTeacher($db, $_GET['teacher_id'] ?? 0);
+        break;
     default:
         break;
 }
