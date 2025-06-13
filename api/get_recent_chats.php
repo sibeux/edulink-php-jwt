@@ -12,16 +12,23 @@ if (!$user_id) {
     exit;
 }
 
-$sql = "SELECT 
-    recent_chats.peer_id, 
-    recent_chats.last_message, 
-    recent_chats.updated_at, 
-    users.full_name, 
-    users.user_photo
-FROM recent_chats
-LEFT JOIN users ON users.user_id = recent_chats.peer_id
-WHERE recent_chats.user_id = ?
-ORDER BY recent_chats.updated_at DESC;";
+$sql = "WITH ranked_chats AS (
+  SELECT 
+    rc.*,
+    ROW_NUMBER() OVER (PARTITION BY rc.peer_id ORDER BY rc.updated_at DESC) as rn
+  FROM recent_chats rc
+  WHERE rc.user_id = ?
+)
+SELECT 
+  rc.peer_id,
+  rc.last_message,
+  rc.updated_at,
+  u.full_name,
+  u.user_photo
+FROM ranked_chats rc
+JOIN users u ON u.user_id = rc.peer_id
+WHERE rc.rn = 1
+ORDER BY rc.updated_at DESC;;";
 
 $stmt = $db->prepare($sql);
 $stmt->bind_param("i", $user_id);
