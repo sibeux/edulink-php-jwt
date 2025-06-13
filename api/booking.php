@@ -159,8 +159,8 @@ function updateBooking($db)
 
         $stmt->bind_param(
             'si',
-            $id_booking,
-            $booking_status
+            $booking_status,
+            $id_booking
         );
 
         if ($stmt->execute()) {
