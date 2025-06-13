@@ -148,9 +148,51 @@ WHERE teacher_id = ? ORDER BY id_booking DESC;;")
     echo json_encode($response);
 }
 
+function updateBooking($db)
+{
+    if (
+        $stmt = $db->prepare('UPDATE bookings SET booking_status = ?
+                    WHERE id_booking = ?')
+    ) {
+        $id_booking = $_POST['id_booking'];
+        $booking_status = $_POST['booking_status'];
+
+        $stmt->bind_param(
+            'si',
+            $id_booking,
+            $booking_status
+        );
+
+        if ($stmt->execute()) {
+            $response = [
+                "status" => "success",
+                "booking_id" => $stmt->insert_id
+            ];
+        } else {
+            $response = [
+                "status" => "error",
+                "message" => "Failed to execute the query.",
+                "error" => $stmt->error
+            ];
+        }
+
+        $stmt->close();
+        echo json_encode($response);
+    } else {
+        $response = [
+            "status" => "failed",
+            "message" => "Could not prepare statement!"
+        ];
+        echo json_encode($response);
+    }
+}
+
 switch ($method) {
     case 'create_booking':
         createBooking($db);
+        break;
+    case 'update_booking':
+        updateBooking($db);
         break;
     case 'get_bookings_by_student':
         getBookingsByStudent($db, $_GET['student_id'] ?? 0);
